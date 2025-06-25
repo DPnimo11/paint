@@ -6,9 +6,42 @@ let rainbow = false;
 let eraser = false;
 let gradient = false;
 let toolbar = Array.from(document.querySelector("#toolbar").children);
-console.log(toolbar);
 let board = [];
-let color = "black";
+let color = "#000000";
+
+function hexConverter (hexColor) {
+    rgb = "rgb(";
+    for (let i = 1; i < hexColor.length; i += 2) {
+        rgb += parseInt(hexColor.slice(i, i + 2), 16) + ", ";
+    }
+    return rgb.slice(0, -2) + ")";
+
+}
+
+function drawHandler(e) {
+    if (eraser) {
+        e.target.style.backgroundColor = "rgb(255, 255, 255)";
+        e.target.style.opacity = 1;
+    } else if (rainbow) {
+        e.target.style.backgroundColor = `rgb(${Math.floor(Math.random() * 256)} ${Math.floor(Math.random() * 256)} ${Math.floor(Math.random() * 256)})`;
+        e.target.style.opacity = 1;
+    } else if (gradient) {
+        /*
+        const computedStyle = window.getComputedStyle(box);
+        const opacity = computedStyle.opacity;
+        */
+        console.log(hexConverter(color), color);
+        if (e.target.style.backgroundColor === hexConverter(color)) {
+            e.target.style.opacity = +e.target.style.opacity + 0.1;
+        } else {
+            e.target.style.backgroundColor = color;
+            e.target.style.opacity = 0.1;
+        }
+    } else {
+        e.target.style.backgroundColor = color;
+        e.target.style.opacity = 1;
+    }
+}
 
 function initBoard() {
     for (let i = 0; i < width; i++) {
@@ -21,41 +54,15 @@ function initBoard() {
         for (let j = 0; j < width; j++) {
             let box = document.createElement("div");
             box.setAttribute("class", "box");
-            box.style.backgroundColor = "white";
+            box.style.backgroundColor = "rgb(255, 255, 255)";
+            box.style.opacity = 1;
             box.addEventListener("mousedown", (e) => {
                 draw = true;
-                if (eraser) {
-                    e.target.style.backgroundColor = "white";
-                } else if (rainbow) {
-                    e.target.style.backgroundColor = `rgb(${Math.floor(Math.random() * 256)} ${Math.floor(Math.random() * 256)} ${Math.floor(Math.random() * 256)})`;
-                } else if (gradient) {
-                    if (e.target.style.backgroundColor === "rgb(255, 0, 0)") {
-                        e.target.style.opacity = e.target.style.opacity + 0.1;
-                    } else {
-
-                        e.target.style.opacity = 0.1;
-                    }
-                } else {
-                    e.target.style.backgroundColor = color;
-                }
+                drawHandler(e);
             })
             box.addEventListener("mouseenter", e => {
                 if (draw) {
-                    if (eraser) {
-                        e.target.style.backgroundColor = "white";
-                    } else if (rainbow) {
-                        e.target.style.backgroundColor = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
-                    } else if (gradient) {
-                        console.log(e.target.style.backgroundColor);
-                        if (e.target.style.backgroundColor === "rgb(255, 0, 0)") {
-                            console.log(e.target.style.opacity);
-                            e.target.style.opacity = e.target.style.opacity + 0.1;
-                        } else {
-                            e.target.style.opacity = 0.1;
-                        }
-                    } else {
-                        e.target.style.backgroundColor = color;
-                }
+                    drawHandler(e);
                 }
             })
             box.addEventListener('dragstart', e => {
@@ -72,7 +79,8 @@ function initBoard() {
 function clearBoard() {
     for (let row of board) {
         for (let box of row) {
-            box.style.backgroundColor = "white";
+            box.style.backgroundColor = "rgb(255, 255, 255)";
+            box.style.opacity = 1;
         }
     }
 }
@@ -80,59 +88,62 @@ function clearBoard() {
 
 /*TODO: get rid of ugly toolbar work, add global event listener dispatcher for highlighting, fix stupid if staements */
 
+/* RESET */
 toolbar[5].addEventListener("click", () => clearBoard())
 
+/* ERASER */
 toolbar[4].addEventListener("click", (e) => {
-    if (e.target.style.backgroundColor != "rgb(192, 146, 199)") {
-        for (let i = 1; i < toolbar.length; i++) {
-            toolbar[i].style.background = "#FCB1A6";
-        }
-        e.target.style.backgroundColor = "#C092C7";
-        eraser = true;
-        rainbow = false;
-        gradient = false;
+    for (let i = 1; i < toolbar.length; i++) {
+        toolbar[i].style.backgroundColor = "#FCB1A6";
     }
+    e.target.style.backgroundColor = "#C092C7";
+    eraser = true;
+    rainbow = false;
+    gradient = false;
 })
 
-
+/* GRADIENT */
 /* todo: make this only highlight the border, not whole background */
 toolbar[3].addEventListener("click", (e) => {
-    if (e.target.style.backgroundColor != "rgb(192, 146, 199)") {
-        for (let i = 1; i < toolbar.length; i++) {
-            toolbar[i].style.background = "#FCB1A6";
-        }
-        e.target.style.backgroundColor = "#C092C7";
+    for (let i = 1; i < toolbar.length; i++) {
+        toolbar[i].style.backgroundColor = "#FCB1A6";
     }
+    if (!gradient) {
+        e.target.style.backgroundColor = "#C092C7";
+    } else {
+        e.target.style.backgroundColor = "#FCB1A6";
+    }
+    toolbar[1].style.backgroundColor = "#C092C7"
     rainbow = false;
     eraser = false;
-    /*gradient = !gradient;*/
+    gradient = !gradient;
     color = toolbar[0].value;
 });
 
+/* RAINBOW */
 toolbar[2].addEventListener("click", (e) => {
-    if (e.target.style.backgroundColor != "rgb(192, 146, 199)") {
-        for (let i = 1; i < toolbar.length; i++) {
-            toolbar[i].style.background = "#FCB1A6";
-        }
-        e.target.style.backgroundColor = "#C092C7";
+    for (let i = 1; i < toolbar.length; i++) {
+        toolbar[i].style.backgroundColor = "#FCB1A6";
     }
+    e.target.style.backgroundColor = "#C092C7";
     rainbow = true;
     eraser = false;
     gradient = false;
 })
 
+/* COLOR */
 toolbar[1].addEventListener("click", (e) => {
-    if (e.target.style.backgroundColor != "rgb(192, 146, 199)") {
-        for (let i = 1; i < toolbar.length; i++) {
-            toolbar[i].style.background = "#FCB1A6";
-        }
-        e.target.style.backgroundColor = "#C092C7";
+    for (let i = 1; i < toolbar.length; i++) {
+        if (toolbar[i].id === "gradient") continue;
+        toolbar[i].style.backgroundColor = "#FCB1A6";
     }
+    e.target.style.backgroundColor = "#C092C7";
     eraser = false;
     rainbow = false;
     color = toolbar[0].value;
 })
 
+/* COLOR SELECTOR */
 toolbar[0].addEventListener("input", (e) => {
     if (!(rainbow || eraser)) {
         color = e.target.value;
