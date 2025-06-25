@@ -4,6 +4,14 @@
     background-color: #BDD4E7;
 }
 
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
 h1 {
     text-align: center;
     font-size: 150px;
@@ -39,7 +47,7 @@ input {
     width: 960px;
     display: flex;
     flex-direction: column;
-    border: 2px solid #0E131F;
+    border: 4px solid #0E131F;
     max-width: 100%;
     aspect-ratio: 1 / 1;
 }
@@ -69,4 +77,10 @@ input {
     display: flex;
     justify-content: center;
     gap: 20px;
+}
+
+#footer {
+    margin-top: auto;
+    margin-bottom: 0;
+    font-size: 24px;
 }
