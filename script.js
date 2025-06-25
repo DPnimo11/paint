@@ -44,6 +44,7 @@ function drawHandler(e) {
 }
 
 function initBoard() {
+    whiteboard.replaceChildren();
     for (let i = 0; i < width; i++) {
         let row = document.createElement("div");
         let temp = []
@@ -87,6 +88,17 @@ function clearBoard() {
 
 
 /*TODO: get rid of ugly toolbar work, add global event listener dispatcher for highlighting, fix stupid if staements */
+
+/* Temporary: Reformat */
+toolbar[6].addEventListener("click", () => {
+    width = + prompt("Choose the new number of squares per side!");
+    while (isNaN(width) || width <= 0) {
+        width = + prompt("Invalid number! Choose the new number of squares per side!");
+    }
+    document.documentElement.style.setProperty("--board-dim",`${width}`);
+    initBoard();
+});
+
 
 /* RESET */
 toolbar[5].addEventListener("click", () => clearBoard())
